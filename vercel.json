@@ -7,7 +7,7 @@
       "maxDuration": 10,
       "includeFiles": "node_modules/undici"
     }
-  }],
+  ],
   "routes": [{
     "src": "/(.*)",
     "dest": "/api/proxy?url=https://cdn.xcqcoo.top/$1",
