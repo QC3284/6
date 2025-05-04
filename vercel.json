@@ -10,16 +10,16 @@
     {
       "src": "/static/(.*)",
       "dest": "/public/$1",
+      "status": 200,
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
     {
       "src": "/(.*)",
-      "dest": "/api/proxy",
+      "dest": "/api/proxy?url=https://cdn.xcqcoo.top/$1",
       "headers": {
-        "X-Proxy-By": "Vercel",
-        "Cache-Control": "public, max-age=600"
+        "X-Proxy-By": "Vercel"
       }
     }
   ]
