@@ -1,30 +1,18 @@
 {
   "version": 2,
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/proxy?url=https://cdn.xcqcoo.top/$1"
+  "builds": [{
+    "src": "api/proxy.js",
+    "use": "@vercel/node",
+    "config": {
+      "maxDuration": 10,     // 缩短超时时间
+      "includeFiles": "node_modules/undici"  // 优化 fetch 实现
     }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Proxy-By", "value": "Vercel" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
+  }],
+  "routes": [{
+    "src": "/(.*)",
+    "dest": "/api/proxy?url=https://cdn.xcqcoo.top/$1",
+    "headers": {
+      "Cache-Control": "public, max-age=600"  // 减少回源频率
     }
-  ],
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/api/proxy", "dest": "/api/proxy" },
-    { "src": "/(.*)", "dest": "/api/proxy?url=https://cdn.xcqcoo.top/$1" }
-  ],
-  "functions": {
-    "api/proxy.js": {
-      "memory": 3008,
-      "maxDuration": 30,
-      "includeFiles": "node_modules/zlib/**"
-    }
-  }
+  }]
 }
