@@ -1,6 +1,12 @@
 import { Transform } from 'stream';
 import zlib from 'zlib';
 
+// 在函数开头添加 Vercel v2 专用配置
+if (process.env.VERCEL) {
+  // 设置最大内存为 3008MB
+  process.env.NODE_OPTIONS = '--max-old-space-size=3008';
+}
+
 // 配置常量
 const DEFAULT_TARGET = 'https://cdn.xcqcoo.top';
 const ALLOWED_ENCODINGS = new Set(['gzip', 'deflate', 'br']);
