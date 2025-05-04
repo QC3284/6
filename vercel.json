@@ -1,33 +1,30 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/proxy.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/api/proxy",
-      "headers": {
-        "X-Proxy-By": "Vercel",
-        "Cache-Control": "public, max-age=3600"
-      },
-      "continue": true
-    },
-    {
-      "src": "/static/(.*)",
-      "dest": "/public/$1",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    }
-  ],
   "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/api/proxy?url=https://cdn.xcqcoo.top/$1"
     }
-  ]
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Proxy-By", "value": "Vercel" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/api/proxy", "dest": "/api/proxy" },
+    { "src": "/(.*)", "dest": "/api/proxy?url=https://cdn.xcqcoo.top/$1" }
+  ],
+  "functions": {
+    "api/proxy.js": {
+      "memory": 3008,
+      "maxDuration": 30,
+      "includeFiles": "node_modules/zlib/**"
+    }
+  }
 }
