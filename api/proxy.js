@@ -4,8 +4,6 @@ export default async (req, res) => {
   try {
     // ===== 1. 构建目标URL =====
     const targetUrl = new URL(req.query.url || 'https://cdn.xcqcoo.top');
-    const path = req.url.replace(/^\/api\/proxy/, '');
-    targetUrl.pathname = path;
 
     // ===== 2. 流式请求初始化 =====
     const abortController = new AbortController();
