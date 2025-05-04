@@ -1,46 +1,39 @@
-import { PassThrough } from 'stream';
-
 export default async (req, res) => {
   try {
-    // ===== 1. 构建目标URL =====
-    const targetUrl = new URL(req.query.url || 'https://cdn.xcqcoo.top');
+    // 确保路径参数正确传递
+    const target = new URL(
+      req.query.url || 'https://cdn.xcqcoo.top' + req.url.replace('/api/proxy', '')
+    );
 
-    // ===== 2. 流式请求初始化 =====
-    const abortController = new AbortController();
-    req.on('close', () => abortController.abort());
+    // 调试日志
+    console.log('Proxying:', target.toString());
 
-    const response = await fetch(targetUrl, {
+    const response = await fetch(target, {
       method: req.method,
-      headers: { ...req.headers, host: targetUrl.host },
-      body: req.method !== 'GET' ? req.body : undefined,
-      signal: abortController.signal,
-      compress: false
+      headers: {
+        ...req.headers,
+        host: target.host
+      },
+      redirect: 'manual',
+      body: req.method !== 'GET' ? req.body : undefined
     });
 
-    // ===== 3. 头信息优化 =====
+    // 处理重定向
+    if ([301, 302, 307, 308].includes(response.status)) {
+      res.redirect(response.status, response.headers.get('location'));
+      return;
+    }
+
+    // 传递响应
     res.status(response.status);
-    ['content-type', 'cache-control', 'vary'].forEach(header => {
-      const value = response.headers.get(header);
-      if (value) res.setHeader(header, value);
-    });
-
-    // ===== 4. 零内存管道传输 =====
-    const passthrough = new PassThrough();
-    response.body.pipe(passthrough).pipe(res);
-
-    // ===== 5. 内存监控 =====
-    let peakMemory = process.memoryUsage().rss;
-    const monitor = setInterval(() => {
-      peakMemory = Math.max(peakMemory, process.memoryUsage().rss);
-      if (peakMemory > 900 * 1024 * 1024) { // 预留 124MB 安全空间
-        abortController.abort();
-        clearInterval(monitor);
-      }
-    }, 100);
+    response.headers.forEach((v, k) => res.setHeader(k, v));
+    response.body.pipe(res);
 
   } catch (error) {
-    if (!res.headersSent) {
-      res.status(500).json({ error: error.message });
-    }
+    console.error('Proxy Error:', error);
+    res.status(500).json({ 
+      code: "PROXY_FAILURE",
+      message: error.message
+    });
   }
 };
