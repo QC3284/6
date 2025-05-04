@@ -8,18 +8,17 @@
   ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/public/$1",
-      "status": 200,
+      "src": "/_next/static/(.*)",
+      "dest": "/_next/static/$1",
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
     {
       "src": "/(.*)",
-      "dest": "/api/proxy?url=https://cdn.xcqcoo.top/$1",
+      "dest": "/api/proxy",
       "headers": {
-        "X-Proxy-By": "Vercel"
+        "X-Proxy-Target": "https://cdn.xcqcoo.top"
       }
     }
   ]
