@@ -4,42 +4,34 @@ export default async (req, res) => {
     const path = req.url.replace('/api/proxy', '');
     targetUrl.pathname = path;
 
-    // 发起代理请求
+    // 发起请求时禁止自动解压
     const response = await fetch(targetUrl.toString(), {
       method: req.method,
       headers: {
-        ...req.headers,
+        // 过滤客户端压缩要求
+        ...Object.fromEntries(
+          Object.entries(req.headers).filter(([k]) => !k.toLowerCase().startsWith('accept-encoding'))
+        ),
         host: targetUrl.host,
-        // 移除可能冲突的压缩头
-        'accept-encoding': 'gzip, deflate, br'
+        'accept-encoding': 'gzip, deflate, br' // 明确声明支持所有压缩格式
       },
+      compress: false, // 关键：禁止 Node.js 自动解压
       body: req.method !== 'GET' ? req.body : undefined
     });
 
-    // 关键头信息传递
-    const contentType = response.headers.get('content-type');
+    // 传递关键编码头
     const contentEncoding = response.headers.get('content-encoding');
-    
-    // 设置响应头
-    res.setHeader('Content-Type', contentType || 'text/plain; charset=utf-8');
-    if (contentEncoding) res.setHeader('Content-Encoding', contentEncoding);
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-
-    // 二进制安全传输
-    if (contentType?.startsWith('text/') || contentType?.includes('json')) {
-      // 文本类内容
-      const text = await response.text();
-      res.send(text);
-    } else {
-      // 二进制类内容（图片/字体等）
-      const buffer = await response.arrayBuffer();
-      res.send(Buffer.from(buffer));
+    if (contentEncoding) {
+      res.setHeader('Content-Encoding', contentEncoding);
     }
-    
+
+    // 传递内容类型
+    res.setHeader('Content-Type', response.headers.get('content-type') || 'text/plain');
+
+    // 流式传输原始二进制数据
+    response.body.pipe(res);
+
   } catch (error) {
-    res.status(500).send(`
-      <h1>代理错误</h1>
-      <pre>${error.stack}</pre>
-    `);
+    res.status(500).send(`Proxy Error: ${error.message}`);
   }
 };
