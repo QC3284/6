@@ -3,16 +3,16 @@
   "builds": [{
     "src": "api/proxy.js",
     "use": "@vercel/node",
-    "config": {
-      "maxDuration": 10,     // 缩短超时时间
-      "includeFiles": "node_modules/undici"  // 优化 fetch 实现
+    "config": ,
+      "maxDuration": 10,
+      "includeFiles": "node_modules/undici"
     }
   }],
   "routes": [{
     "src": "/(.*)",
     "dest": "/api/proxy?url=https://cdn.xcqcoo.top/$1",
     "headers": {
-      "Cache-Control": "public, max-age=600"  // 减少回源频率
+      "Cache-Control": "public, max-age=600"
     }
   }]
 }
