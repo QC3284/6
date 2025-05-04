@@ -1,33 +1,6 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/proxy.js",
-      "use": "@vercel/node",
-      "config": {
-        "maxDuration": 15,
-        "memory": 1024
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/npm/(.*)",
-      "dest": "/api/proxy?p=npm/$1",
-      "headers": {
-        "Cache-Control": "public, max-age=3600, immutable"
-      }
-    },
-    {
-      "src": "/gh/(.*)",
-      "dest": "/api/proxy?p=gh/$1",
-      "headers": {
-        "Cache-Control": "public, max-age=3600, immutable"
-      }
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/proxy?p=$1"
-    }
-  ]
+    "version": 2,
+    "routes": [
+      {"src": "/(.*)","dest": "https://cdn.xcqcoo.top"}
+    ]
 }
