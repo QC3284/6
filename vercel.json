@@ -1,13 +1,13 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",        // 匹配所有路径
+      "source": "/(.*)",
       "destination": "/api/proxy?url=https://cdn.xcqcoo.top/$1" 
     }
   ],
   "headers": [
     {
-      "source": "/(.*)",        // 匹配所有路径
+      "source": "/(.*)",
       "headers": [
         { "key": "X-Forwarded-Host", "value": "cdn.xcqcoo.top" },
         { "key": "X-Proxy-By", "value": "Vercel" }
