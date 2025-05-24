@@ -1,6 +1,56 @@
 {
-    "version": 2,
-    "routes": [
-      {"src": "/(.*)","dest": "https://cdn.jsdelivr.net"}
-    ]
+  "$schema": "https://vercel.com/schemas/vercel.json",
+  "redirects": [
+    // GitHub Raw 资源代理
+    {
+      "source": "/gh/:user/:repo@:branch/:path*",
+      "destination": "https://raw.githubusercontent.com/:user/:repo/:branch/:path*",
+      "headers": {
+        "Cache-Control": "public, max-age=3600",
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    // npm 带版本资源
+    {
+      "source": "/npm/:package@:version/:path*",
+      "destination": "https://unpkg.com/:package@:version/:path*",
+      "headers": {
+        "Cache-Control": "public, max-age=3600",
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    // npm 最新版资源
+    {
+      "source": "/npm/:package/:path*",
+      "destination": "https://unpkg.com/:package@latest/:path*",
+      "headers": {
+        "Cache-Control": "public, max-age=3600",
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    // 作用域包特殊处理
+    {
+      "source": "/npm/@:scope/:package@:version/:path*",
+      "destination": "https://unpkg.com/@:scope/:package@:version/:path*",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "source": "/npm/@:scope/:package/:path*",
+      "destination": "https://unpkg.com/@:scope/:package@latest/:path*",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": {
+        "X-Proxy-Type": "Static CDN",
+        "X-Proxy-Source": "GitHub/npm"
+      }
+    }
+  ]
 }
