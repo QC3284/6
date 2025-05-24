@@ -1,89 +1,41 @@
 {
   "$schema": "https://vercel.com/schemas/vercel.json",
-  "redirects": [
+  "builds": [
     {
-      "source": "/gh/:user/:repo@:branch/:path*",
-      "destination": "https://raw.githubusercontent.com/:user/:repo/:branch/:path*",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
+      "src": "/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/gh/:user/:repo@:branch/(.*)",
+      "destination": "https://raw.githubusercontent.com/:user/:repo/:branch/$1"
     },
     {
-      "source": "/npm/@:scope/:package@:version/:path*",
-      "destination": "https://unpkg.com/@:scope/:package@:version/:path*",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
-    },
-    {
-      "source": "/npm/@:scope/:package/:path*",
-      "destination": "https://unpkg.com/@:scope/:package@latest/:path*",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
-    },
-    {
-      "source": "/npm/:package@:version/:path*",
-      "destination": "https://unpkg.com/:package@:version/:path*",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
-    },
-    {
-      "source": "/npm/:package/:path*",
-      "destination": "https://unpkg.com/:package@latest/:path*",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
+      "source": "/npm/(.*)",
+      "destination": "https://unpkg.com/$1"
     }
   ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/gh/(.*)",
       "headers": [
-        {
-          "key": "X-Proxy-Type",
-          "value": "Static CDN"
-        },
-        {
-          "key": "X-Proxy-Source",
-          "value": "GitHub/npm"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=3600" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/npm/(.*@[0-9].*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/npm/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
       ]
     }
   ]
