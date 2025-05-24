@@ -8,8 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/gh/([^/]+)/([^/]+)@([^/]+)/(.*)",
-      "dest": "/api/gh-proxy"
+      "src": "/gh/(?<user>[^/]+)/(?<repo>[^/]+)@(?<branch>[^/]+)/(?<path>.*)",
+      "dest": "/api/gh-proxy?user=$user&repo=$repo&branch=$branch&path=$path"
     },
     {
       "src": "/npm/(.*)",
