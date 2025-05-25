@@ -2,21 +2,24 @@
   "$schema": "https://vercel.com/schemas/vercel.json",
   "builds": [
     {
-      "src": "api/gh-proxy.js",
-      "use": "@vercel/node"
+      "src": "/*",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/gh/(?<user>[^/]+)/(?<repo>[^/]+)@(?<branch>[^/]+)/(?<path>.*)",
-      "dest": "/api/gh-proxy?user=$user&repo=$repo&branch=$branch&path=$path"
-    },
-    {
-      "src": "/npm/(.*)",
-      "dest": "https://unpkg.com/$1",
+      "dest": "https://raw.githubusercontent.com/$user/$repo/$branch/$path",
       "headers": {
         "Cache-Control": "public, max-age=3600",
         "Access-Control-Allow-Origin": "*"
+      }
+    },
+    {
+      "src": "/npm/(?<pkg>.+?)(?:@(?<ver>[^/]+))?/(?<file>.*)",
+      "dest": "https://unpkg.com/$pkg@$ver/$file",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
       }
     }
   ]
