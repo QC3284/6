@@ -8,55 +8,10 @@
   ],
   "routes": [
     {
-      "src": "/gh/(?<user>[^/]+)/(?<repo>[^/]+)@(?<branch>[^/]+)/(?<path>.*)",
-      "dest": "https://raw.githubusercontent.com/$user/$repo/$branch/$path",
-      "headers": {
-        "Cache-Control": "public, max-age=3600",
-        "Access-Control-Allow-Origin": "*"
-      }
-    },
-    {
-      "src": "/npm/(?<pkg>.+?)(?:@(?<ver>[^/]+))?/(?<file>.*)",
-      "dest": "https://unpkg.com/$pkg@$ver/$file",
-      "headers": {
-        "Cache-Control": "public, max-age=3600"
-      }
-    },
-    {
-      "src": "/esm/(?<pkg>.+?)(@(?<ver>[^/]+))?/?(?<file>.*)",
-      "dest": "https://esm.run/$pkg$ver/$file",
-      "headers": {
-        "Cache-Control": "public, max-age=3600"
-      }
-    },
-    {
-      "src": "/wp/plugins/(?<plugin>[^/]+)/(?:tags/(?<version>[^/]+)|trunk)/(?<path>.*)",
-      "dest": "https://plugins.svn.wordpress.org/$plugin/$2/$path",
-      "headers": {
-        "Cache-Control": "public, max-age=3600"
-      }
-    },
-    {
-      "src": "/wp/themes/(?<theme>[^/]+)/(?:tags/(?<version>[^/]+)|trunk|(?<direct_ver>[^/]+))/(?<path>.*)",
-      "dest": "https://themes.svn.wordpress.org/$theme/${ $2 ? `tags/${$2}` : ($3 ? `tags/${$3}` : 'trunk') }/$path",
-      "headers": {
-        "Cache-Control": "public, max-age=3600"
-      }
-    },
-    {
-      "src": "/jsd/esm/(?<path>.*)",
-      "dest": "https://esm.run/$path",
-      "headers": {
-        "Cache-Control": "public, max-age=3600"
-      }
-    },
-    {
-      "src": "/jsd/(?<subpath>.*)",
-      "dest": "https://cdn.jsdelivr.net/$subpath",
-      "headers": {
-        "Cache-Control": "public, max-age=3600"
-      }
+      "src": "/(.*)",
+      "middlewarePath": "middleware.js",
+      "continue": true
     }
-  ],
+ ],
   "regions": ["hkg1"]
 }
